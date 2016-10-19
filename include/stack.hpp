@@ -1,5 +1,5 @@
 #include <iostream>
-#include <exception>
+#include <stdexcept>
 
 template <typename T>
 auto new_with_copy( T const * src, size_t src_size, size_t dst_size ) -> T *
