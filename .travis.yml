@@ -67,5 +67,4 @@ install:
       fi
 
 script:
-    - tools/build.sh stack
-    - tools/test.sh
+    - tools/build.sh stack && tools/test.sh
