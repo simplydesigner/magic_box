@@ -1,152 +1,52 @@
+#pragma once
 #include <iostream>
-#include <stdexcept>
+#ifndef STACK_HPP
+#define STACK_HPP
+
+using std::size_t;
+using std::ostream;
+
+template<typename T>
+auto copy(const T * rhs, size_t sizeLeft, size_t sizeRight)->T *; /*strong*/
+template <typename T1, typename T2>
+auto construct(T1 * ptr, T2 const & value) -> void;
+template <typename T>
+auto destroy(T * ptr) noexcept -> void;
+template <typename FwdIter>
+auto destroy(FwdIter first, FwdIter last) noexcept -> void;
 
 template <typename T>
-auto new_with_copy( T const * src, size_t src_size, size_t dst_size ) -> T *
-{
-    T * dst = new T [ dst_size ];
-    
-    try {
-        std::copy( src, src + src_size, dst );
-    }
-    catch (...) {
-        delete [] dst;
-        throw;
-    }
-    
-    return dst;
-}
+class allocator {
+protected:
+	explicit allocator(size_t size = 0); /*noexcept*/
+	~allocator(); /*noexcept*/
+	auto swap(allocator & other) -> void; /*noexcept*/
 
+	allocator(allocator const &) = delete;
+	auto operator=(allocator const &)->allocator & = delete;
 
-template <typename T>
-class stack {
-public:
-    stack();
-    stack( stack const & );
-    ~stack();
-    auto operator =( stack const & ) -> stack &;
-    
-    auto empty() const noexcept -> bool;
-    auto count() const noexcept -> size_t;
-    auto push( T const & value ) -> void;
-    auto pop() -> void;
-    auto top() -> T &;
-    auto top() const -> T const &;
-    
-private:
-    auto throw_is_empty() -> void;
-    auto swap( stack & other ) -> void;
-    
-    T * ptr_;
-    size_t size_;
-    size_t count_;
+	T * ptr_;
+	size_t size_;
+	size_t count_;
 };
 
-template <typename T>
-stack<T>::stack() :
-    ptr_( nullptr ),
-    size_( 0 ),
-    count_( 0 )
-{
-    ;
-}
+template<typename T>
+class stack : private ::allocator<T> {
+public:
+	stack(size_t size = 0); /*noexcept*/
+	stack(stack const & rhs); /*strong*/
+	~stack(); /*noexcept*/
 
-template <typename T>
-stack<T>::stack(stack const & other) :
-    ptr_( new_with_copy( other.ptr_, other.count_, other.count_) ),
-    size_( other.count_ ),
-    count_( other.count_ )
-{
-    ;
-}
+	auto count() const noexcept->size_t; /*noexcept*/
+	auto empty() const noexcept -> bool; /*noexcept*/
+	auto top() const -> const T&; /*strong*/
+	auto pop() -> void; /*strong*/
+	auto push(T const & value) -> void; /*strong*/
 
-template <typename T>
-auto stack<T>::operator =(stack const & other) -> stack &
-{
-    if ( this != &other ) {
-        this->swap( stack( other ) );
-    };
-    
-    return *this;
-}
+	auto operator=(stack const & rhs)->stack &; /*strong*/
+	auto operator==(stack const & rhs) -> bool; /*noexcept*/
+};
 
-template <typename T>
-stack<T>::~stack<T>()
-{
-    delete [] ptr_;
-}
+#include "stack.cpp"
 
-template <typename T>
-auto stack<T>::empty() const noexcept -> bool
-{
-    return count_ == 0;
-}
-
-template <typename T>
-auto stack<T>::count() const noexcept -> size_t
-{
-    return count_;
-}
-
-template <typename T>
-auto stack<T>::push(const T & value) -> void
-{
-    if ( count_ == size_ ) {
-        size_t size = size_ * 2 + (size_ == 0);
-        
-        T * ptr = new_with_copy(ptr_, count_, size);
-        
-        delete [] ptr_;
-        ptr_ = ptr;
-        size_ = size;
-        ptr_ = ptr;
-    }
-    
-    ptr_[count_] = value;
-    ++count_;
-}
-
-template <typename T>
-auto stack<T>::pop() -> void
-{
-    if ( count_ == 0 ) {
-        throw_is_empty();
-    }
-    
-    --count_;
-}
-
-template <typename T>
-auto stack<T>::top() -> T &
-{
-    if ( count_ == 0 ) {
-        throw_is_empty();
-    }
-    
-    return ptr_[count_ - 1];
-}
-
-template <typename T>
-auto stack<T>::top() const -> T const &
-{
-    if ( count_ == 0 ) {
-        throw_is_empty();
-    }
-    
-    return ptr_[count_ - 1];
-}
-
-template <typename T>
-auto stack<T>::throw_is_empty() -> void
-{
-    throw std::logic_error("stack is empty");
-}
-
-template <typename T>
-auto stack<T>::swap( stack & other ) -> void
-{
-    std::swap( ptr_, other.ptr_ );
-    std::swap( size_, other.size_ );
-    std::swap( count_, other.count_ );
-}
-
+#endif
