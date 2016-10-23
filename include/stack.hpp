@@ -1,6 +1,8 @@
 #pragma once 
 #include <iostream>
+#include <stdexcept>
 #include <vector>
+
 #ifndef STACK_HPP
 #define STACK_HPP
 
