@@ -8,8 +8,6 @@
 
 using std::size_t;
 using std::ostream;
-template<typename T>
-class stack;
 
 template<typename T>
 auto copy(const T * rhs, size_t sizeLeft, size_t sizeRight) -> T *; /*strong*/
@@ -82,11 +80,10 @@ public:
 	auto top() const -> const T&; /*strong*/
 	auto pop() -> void; /*strong*/
 	auto push(T const & value) -> void; /*strong*/
-	auto swap(stack & other) -> void;
 
 	auto print() -> void;
 
-	auto operator=(stack const & rhs)->stack &; /*strong*/
+	auto operator=(stack const & rhs) -> stack &; /*strong*/
 	auto operator==(stack const & rhs) -> bool; /*noexcept*/
 private:
 	allocator<T> alloc;

@@ -157,7 +157,7 @@ inline allocator<T>::allocator(allocator const & other) :
 	ptr_(static_cast<T *>(other.count_ == 0 ? nullptr : operator new(other.count_ * sizeof(T)))),
 	size_(other.size_),
 	bitset_(other.bitset_) {
-	for (size_t i = this->count_; i < other.bitset_.count(); ++i) {
+	for (size_t i = 0; i < other.count_; ++i) {
 		this->construct(this->ptr_ + i, other.ptr_[i]);
 	}
 	this->count_ = other.count_;
@@ -311,23 +311,6 @@ inline auto stack<T>::push(T const & value) -> void {
 		alloc.resize();
 	}
 	alloc.construct(alloc.get() + alloc.count(), value);
-
-	//if (this->count_ == this->size_) {
-	//	size_t array_size = this->size_ * 2 + (this->size_ == 0);
-	//	stack<T> temp{ array_size };
-	//	//stack temp(array_size);
-	//	while (temp.count() < this->count_) {
-	//		temp.push(this->ptr_[temp.count()]);
-	//	}
-	//	this->swap(temp);
-	//}
-	//construct(this->ptr_ + this->count_, value);
-	//++this->count_;
-}
-
-template<typename T>
-auto stack<T>::swap(stack & other) -> void {
-	std::swap(alloc, other.alloc);
 }
 
 template<typename T>
@@ -340,7 +323,7 @@ auto stack<T>::print() -> void {
 template<typename T> /*strong*/
 inline auto stack<T>::operator=(stack const & rhs) -> stack & {
 	if (this != &rhs) {
-		(stack(rhs)).swap(*this);
+		(allocator<T>(rhs.alloc)).swap(this->alloc);
 	}
 	return *this;
 }
