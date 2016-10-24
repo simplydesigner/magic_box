@@ -142,7 +142,7 @@ inline allocator<T>::allocator(allocator const & other) :
 		if (bitset_.test(i)) {
 		this->construct(this->ptr_ + i, other.ptr_[i]);
 		}
-	}
+	this->count_ = other.count_;
 }
 
 template<typename T>
