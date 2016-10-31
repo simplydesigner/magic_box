@@ -137,7 +137,7 @@ inline allocator<T>::allocator(size_t size) :
 
 template<typename T>
 inline allocator<T>::allocator(allocator const & other) : 
-	allocator<T>(tmp.size_),
+	allocator<T>(other.size_),
 	bitset_(other.bitset_) {
 	for (size_t i = 0; i < size_; ++i) {
 		construct(ptr_ + i, other.ptr_[i]);
@@ -190,7 +190,7 @@ auto allocator<T>::get() const -> T const * {
 template<typename T>
 auto allocator<T>::resize() -> void {
 	auto size = size_ * 2 + (size_ == 0);
-	T * newArray = copy(ptr_, count_, size);
+	T * newArray = copy(ptr_, bitset_.count(), size);
 	delete[] ptr_;
 	ptr_ = newArray;
 	size_ = size;
@@ -205,7 +205,6 @@ inline allocator<T>::~allocator() {
 template<typename T> /*noexcept*/
 auto allocator<T>::swap(allocator & other) -> void {
 	std::swap(ptr_, other.ptr_);
-	std::swap(count_, other.count_);
 	std::swap(size_, other.size_);
 	std::swap(bitset_, other.bitset_);
 }
