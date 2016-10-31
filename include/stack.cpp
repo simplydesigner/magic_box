@@ -232,14 +232,6 @@ inline stack<T>::stack(size_t size) :
 	alloc(size) {
 }
 
-template<typename T> /*strong*/
-inline stack<T>::stack(stack const & rhs) :
-	alloc(rhs.alloc) {
-	/*for (size_t i = alloc.count(); i < rhs.alloc.count(); ++i) {
-		alloc.construct(alloc.get() + i, rhs.alloc.get()[i]);
-	}*/
-}
-
 template<typename T> /*noexcept*/
 inline stack<T>::~stack() {
 	destroy(alloc.get(), alloc.get() + alloc.count());
