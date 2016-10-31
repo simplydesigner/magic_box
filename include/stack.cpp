@@ -48,7 +48,7 @@ inline auto dynamic_bitset::flip(size_t pos) throw(std::out_of_range) -> void {
 		bits.at(pos).flip();
 	}
 	else {
-		throw std::out_of_range("out of range");
+		throw std::out_of_range("flip pos: out of range");
 	}
 }
 
@@ -73,7 +73,7 @@ inline auto dynamic_bitset::reset(size_t pos) throw(std::out_of_range) -> void {
 		bits.at(pos) = false;
 	}
 	else {
-		throw std::out_of_range("out of range");
+		throw std::out_of_range("reset pos: out of range");
 	}
 }
 
@@ -88,7 +88,7 @@ inline auto dynamic_bitset::set(size_t pos) throw(std::out_of_range) -> void {
 		bits.at(pos) = true;
 	}
 	else {
-		throw std::out_of_range("out of range");
+		throw std::out_of_range("set pos: out of range");
 	}
 }
 
@@ -101,7 +101,7 @@ inline auto dynamic_bitset::test(size_t pos) const throw(std::out_of_range) -> b
 		return bits.at(pos);
 	}
 	else {
-		throw std::out_of_range("out of range");
+		throw std::out_of_range("test pos: out of range");
 	}
 }
 
@@ -110,7 +110,7 @@ inline auto dynamic_bitset::operator[](size_t pos) throw(std::out_of_range) -> b
 		return bits.at(pos);
 	}
 	else {
-		throw std::out_of_range("out of range");
+		throw std::out_of_range("operator[] pos: out of range");
 	}
 }
 
@@ -143,7 +143,7 @@ inline allocator<T>::allocator(allocator const & tmp) :
 template<typename T>
 inline auto allocator<T>::construct(T * ptr, T const & value) -> void {
 	if (ptr < ptr_ || ptr >= ptr_ + size_ || bitset_.test(ptr - ptr_)) {
-		throw std::out_of_range("out of range");
+		throw std::out_of_range("allocator construct: out of range");
 	}
 	new(ptr) T(value);
 	++count_;
@@ -158,7 +158,7 @@ auto allocator<T>::count() const -> size_t {
 template<typename T>
 auto allocator<T>::destroy(T * ptr) -> void {
 	if (ptr < ptr_ || ptr >= ptr_ + size_ || bitset_.test(ptr - ptr_) == false) {
-		throw std::out_of_range("out of range");
+		throw std::out_of_range("allocator destroy: out of range");
 	}
 	ptr->~T();
 	--count_;
