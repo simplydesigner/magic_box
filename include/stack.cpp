@@ -100,7 +100,6 @@ inline auto dynamic_bitset::size() const noexcept -> size_t {
 }
 
 inline auto dynamic_bitset::test(size_t pos) const throw(std::out_of_range) -> bool {
-	std::cout << pos;
 	if (pos < bits.size()) {
 		return bits.at(pos);
 	}
