@@ -20,23 +20,23 @@ auto destroy(FwdIter first, FwdIter last) noexcept -> void;
 
 class dynamic_bitset {
 public:
-	explicit dynamic_bitset(size_t size = 0) noexcept;
+	explicit dynamic_bitset(size_t size = 0) noexcept; /*noexcept*/
 
-	auto all() const noexcept -> bool;
-	auto any() noexcept -> bool;
-	auto count() const noexcept -> size_t;
-	auto flip() noexcept -> void;
-	auto flip(size_t pos) throw(std::out_of_range) -> void;
-	auto none() const noexcept -> bool;
-	auto resize() noexcept -> void;
-	auto reset() noexcept -> void;
-	auto reset(size_t pos) throw(std::out_of_range) -> void;
-	auto set() noexcept -> void;
-	auto set(size_t pos) throw(std::out_of_range) -> void;
-	auto size() const noexcept -> size_t;
-	auto test(size_t pos) const throw(std::out_of_range) -> bool;
+	auto all() const noexcept -> bool; /*noexcept*/
+	auto any() noexcept -> bool; /*noexcept*/
+	auto count() const noexcept -> size_t; /*noexcept*/
+	auto flip() noexcept -> void; /*noexcept*/
+	auto flip(size_t pos) throw(std::out_of_range) -> void; /*strong*/
+	auto none() const noexcept -> bool; /*noexcept*/
+	auto resize() noexcept -> void; /*noexcept*/
+	auto reset() noexcept -> void; /*noexcept*/
+	auto reset(size_t pos) throw(std::out_of_range) -> void; /*strong*/
+	auto set() noexcept -> void; /*noexcept*/
+	auto set(size_t pos) throw(std::out_of_range) -> void; /*strong*/
+	auto size() const noexcept -> size_t; /*noexcept*/
+	auto test(size_t pos) const throw(std::out_of_range) -> bool; /*strong*/
 
-	auto operator[](size_t pos) throw(std::out_of_range) -> bool;
+	auto operator[](size_t pos) throw(std::out_of_range) -> bool; /*strong*/
 private:
 	std::vector<bool> bits;
 };
@@ -44,16 +44,16 @@ private:
 template <typename T>
 class allocator {
 public:
-	explicit allocator(size_t size = 0);
-	allocator(allocator const & other);
+	explicit allocator(size_t size = 0); /*strong*/
+	allocator(allocator const & other); /*strong*/
 	auto operator=(allocator const & other) -> allocator & = delete;
-	~allocator();
+	~allocator(); /*strong*/
 
-	auto construct(T * ptr, T const & value) -> void;
-	auto count() const -> size_t;
+	auto construct(T * ptr, T const & value) -> void; /*strong*/
+	auto count() const -> size_t; /*noxecept*/
 	auto destroy(T * ptr) -> void;
-	auto empty() const -> bool;
-	auto full() const -> bool;
+	auto empty() const -> bool; /*noexecpt*/
+	auto full() const -> bool; /*noexecpt*/
 	auto get() -> T *;
 	auto get() const -> T const *;
 	auto resize() -> void;
