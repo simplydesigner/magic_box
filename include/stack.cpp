@@ -131,21 +131,17 @@ template<typename T>
 inline allocator<T>::allocator(size_t size) :
 	ptr_(static_cast<T *>(size == 0 ? nullptr : operator new(size * sizeof(T)))),
 	size_(size),
-	count_(0),
 	bitset_(0) {
 }
 
 template<typename T>
 inline allocator<T>::allocator(allocator const & other) :
-	ptr_(static_cast<T *>(other.size_ == 0 ? nullptr : operator new(other.size_ * sizeof(T)))),
-	size_(other.size_),
-	bitset_(other.bitset_) {
+	allocator<T>(other.size_) {
 	for (size_t i = 0; i < other.count_; ++i) {
-		if (bitset_.test(i) == true) {
-		this->construct(this->ptr_ + i, other.ptr_[i]);
+		if (other.bitset_.test(i)) {
+			this->construct(this->ptr_ + i, other.ptr_[i]);
 		}
-	this->count_ = other.count_;
-}
+	}
 }
 
 template<typename T>
