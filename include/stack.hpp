@@ -61,7 +61,6 @@ public:
 private:
 	T * ptr_;
 	size_t size_;
-	size_t count_;
 	dynamic_bitset bitset_;
 
 	template <typename FwdIter>
