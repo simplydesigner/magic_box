@@ -10,8 +10,7 @@
 //////////////////////////////
 
 inline dynamic_bitset::dynamic_bitset(size_t size) noexcept :
-bits(size) {
-	this->reset();
+	bits(size) {
 }
 
 inline auto dynamic_bitset::all() const noexcept -> bool {
@@ -19,6 +18,7 @@ inline auto dynamic_bitset::all() const noexcept -> bool {
 	for (auto i : bits) {
 		if (i == false) {
 			check = false;
+			break;
 		}
 	}
 	return check;
@@ -29,6 +29,7 @@ inline auto dynamic_bitset::any() noexcept -> bool {
 	for (auto i : bits) {
 		if (i == true) {
 			check = true;
+			break;
 		}
 	}
 	return check;
@@ -49,7 +50,7 @@ inline auto dynamic_bitset::flip(size_t pos) throw(std::out_of_range) -> void {
 		bits.at(pos).flip();
 	}
 	else {
-		throw std::out_of_range("out of range");
+		throw std::out_of_range("flip pos: out of range");
 	}
 }
 
@@ -58,6 +59,7 @@ inline auto dynamic_bitset::none() const noexcept -> bool {
 	for (auto i : bits) {
 		if (i == true) {
 			check = false;
+			break;
 		}
 	}
 	return check;
@@ -74,7 +76,7 @@ inline auto dynamic_bitset::reset(size_t pos) throw(std::out_of_range) -> void {
 		bits.at(pos) = false;
 	}
 	else {
-		throw std::out_of_range("out of range");
+		throw std::out_of_range("reset pos: out of range");
 	}
 }
 
@@ -89,7 +91,7 @@ inline auto dynamic_bitset::set(size_t pos) throw(std::out_of_range) -> void {
 		bits.at(pos) = true;
 	}
 	else {
-		throw std::out_of_range("out of range");
+		throw std::out_of_range("set pos: out of range");
 	}
 }
 
@@ -102,7 +104,7 @@ inline auto dynamic_bitset::test(size_t pos) const throw(std::out_of_range) -> b
 		return bits.at(pos);
 	}
 	else {
-		throw std::out_of_range("out of range");
+		throw std::out_of_range("test pos: out of range");
 	}
 }
 
@@ -111,7 +113,7 @@ inline auto dynamic_bitset::operator[](size_t pos) throw(std::out_of_range) -> b
 		return bits.at(pos);
 	}
 	else {
-		throw std::out_of_range("out of range");
+		throw std::out_of_range("operator[]: out of range");
 	}
 }
 
@@ -148,8 +150,8 @@ inline allocator<T>::allocator(allocator const & other) :
 
 template<typename T>
 inline auto allocator<T>::construct(T * ptr, T const & value) -> void {
-	if (ptr < ptr_ || ptr >= ptr_ + size_) {
-		throw std::out_of_range("out of range");
+	if (ptr < ptr_ || ptr >= ptr_ + size_ || bitset_.test(ptr - ptr_)) {
+		throw std::out_of_range("allocator contruct: out of range");
 	}
 	new(ptr) T(value);
 	++count_;
@@ -163,8 +165,8 @@ auto allocator<T>::count() const -> size_t {
 
 template<typename T>
 auto allocator<T>::destroy(T * ptr) -> void {
-	if (ptr < ptr_ || ptr >= ptr_ + size_) {
-		throw std::out_of_range("out of range");
+	if (ptr < ptr_ || ptr >= ptr_ + size_ || !bitset_.test(ptr - ptr_)) {
+		throw std::out_of_range("allocator destroy: out of range");
 	}
 	ptr->~T();
 	--count_;
@@ -234,14 +236,6 @@ inline auto allocator<T>::destroy(FwdIter first, FwdIter last) noexcept -> void 
 template<typename T> /*noexcept*/
 inline stack<T>::stack(size_t size) :
 	alloc(size) {
-}
-
-template<typename T> /*strong*/
-inline stack<T>::stack(stack const & rhs) :
-	alloc(rhs.alloc) {
-	/*for (size_t i = alloc.count(); i < rhs.alloc.count(); ++i) {
-		alloc.construct(alloc.get() + i, rhs.alloc.get()[i]);
-	}*/
 }
 
 template<typename T> /*noexcept*/
