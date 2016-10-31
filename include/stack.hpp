@@ -72,7 +72,7 @@ template<typename T>
 class stack {
 public:
 	explicit stack(size_t size = 0); /*noexcept*/
-	stack(stack const & rhs); /*strong*/
+	stack(stack const & rhs) = default; /*strong*/
 	~stack(); /*noexcept*/
 
 	auto count() const noexcept->size_t; /*noexcept*/
