@@ -18,6 +18,7 @@ inline auto dynamic_bitset::all() const noexcept -> bool {
 	for (auto i : bits) {
 		if (i == false) {
 			check = false;
+			break;
 		}
 	}
 	return check;
@@ -28,6 +29,7 @@ inline auto dynamic_bitset::any() noexcept -> bool {
 	for (auto i : bits) {
 		if (i == true) {
 			check = true;
+			break;
 		}
 	}
 	return check;
@@ -57,6 +59,7 @@ inline auto dynamic_bitset::none() const noexcept -> bool {
 	for (auto i : bits) {
 		if (i == true) {
 			check = false;
+			break;
 		}
 	}
 	return check;
@@ -136,7 +139,9 @@ template<typename T>
 inline allocator<T>::allocator(allocator const & tmp) : 
 	allocator<T>(tmp.size_) {
 	for (size_t i = 0; i < size_; ++i) {
-		construct(ptr_ + i, tmp.ptr_[i]);
+		if (bitset_.test(i) == false) {
+			construct(ptr_ + i, tmp.ptr_[i]);
+		}
 	}
 }
 
@@ -272,7 +277,7 @@ inline auto stack<T>::pop() -> void {
 
 template<typename T> /*strong*/
 inline auto stack<T>::push(T const & value) -> void {
-	if (alloc.empty() == true || alloc.full() == true) {
+	if (alloc.full() == true) {
 		alloc.resize();
 	}
 	alloc.construct(alloc.get() + alloc.count(), value);
@@ -286,7 +291,7 @@ auto stack<T>::print() -> void {
 }
 
 template<typename T> /*strong*/
-inline auto stack<T>::operator=(stack const & rhs) -> stack & {
+inline auto stack<T>::operator =(stack const & rhs) -> stack & {
 	if (this != &rhs) {
 		(allocator<T>(rhs.alloc)).swap(this->alloc);
 	}
@@ -294,7 +299,7 @@ inline auto stack<T>::operator=(stack const & rhs) -> stack & {
 }
 
 template<typename T> /*noexcept*/
-inline auto stack<T>::operator==(stack const & rhs) -> bool {
+inline auto stack<T>::operator ==(stack const & rhs) -> bool {
 	if (rhs.alloc.count() != this->alloc.count()) {
 		return false;
 	}
