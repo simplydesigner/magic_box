@@ -12,7 +12,7 @@ using std::ostream;
 class dynamic_bitset {
 public:
     explicit dynamic_bitset(size_t size = 0) noexcept;
-
+    
     auto all() const noexcept -> bool;
     auto any() noexcept -> bool;
     auto count() const noexcept -> size_t;
@@ -26,7 +26,7 @@ public:
     auto set(size_t pos) throw(std::out_of_range) -> void;
     auto size() const noexcept -> size_t;
     auto test(size_t pos) const throw(std::out_of_range) -> bool;
-
+    
     auto operator[](size_t pos) throw(std::out_of_range) -> bool;
 private:
     std::vector<bool> bits;
@@ -39,7 +39,7 @@ public:
     allocator(allocator const & other);
     auto operator=(allocator const & other) -> allocator & = delete;
     ~allocator();
-
+    
     auto construct(T * ptr, T const & value) -> void;
     auto count() const -> size_t;
     auto destroy(T * ptr) -> void;
@@ -53,7 +53,7 @@ private:
     T * ptr_;
     size_t size_;
     dynamic_bitset bitset_;
-
+    
     template <typename FwdIter>
     auto destroy(FwdIter first, FwdIter last) noexcept -> void;
 };
@@ -64,15 +64,15 @@ public:
     explicit stack(size_t size = 0); /*noexcept*/
     stack(stack const & rhs) = default; /*strong*/
     ~stack(); /*noexcept*/
-
+    
     auto count() const noexcept->size_t; /*noexcept*/
     auto empty() const noexcept -> bool; /*noexcept*/
     auto top() const -> const T&; /*strong*/
     auto pop() -> void; /*strong*/
     auto push(T const & value) -> void; /*strong*/
-
+    
     auto print() -> void;
-
+    
     auto operator=(stack const & rhs) -> stack &; /*strong*/
     auto operator==(stack const & rhs) -> bool; /*noexcept*/
 private:
