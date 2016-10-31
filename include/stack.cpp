@@ -132,13 +132,13 @@ template<typename T>
 inline allocator<T>::allocator(size_t size) :
 	ptr_(static_cast<T *>(size == 0 ? nullptr : operator new(size * sizeof(T)))),
 	size_(size),
-	count_(0),
 	bitset_(0) {
 }
 
 template<typename T>
 inline allocator<T>::allocator(allocator const & other) : 
-	allocator<T>(tmp.size_) {
+	allocator<T>(tmp.size_),
+	bitset_(other.bitset_) {
 	for (size_t i = 0; i < size_; ++i) {
 		construct(ptr_ + i, other.ptr_[i]);
 	}
@@ -150,13 +150,12 @@ inline auto allocator<T>::construct(T * ptr, T const & value) -> void {
 		throw std::out_of_range("allocator construct: out of range");
 	}
 	new(ptr) T(value);
-	++count_;
 	bitset_.set(ptr - ptr_);
 }
 
 template<typename T>
 auto allocator<T>::count() const -> size_t {
-	return count_;
+	return bitset_.count();
 }
 
 template<typename T>
@@ -165,18 +164,17 @@ auto allocator<T>::destroy(T * ptr) -> void {
 		throw std::out_of_range("allocator destroy: out of range");
 	}
 	ptr->~T();
-	--count_;
 	bitset_.reset(ptr - ptr_);
 }
 
 template<typename T>
 auto allocator<T>::empty() const -> bool {
-	return (count_ == 0);
+	return (bitset_.count() == 0);
 }
 
 template<typename T>
 auto allocator<T>::full() const -> bool {
-	return (count_ == size_);
+	return (bitset_.all());
 }
 
 template<typename T>
