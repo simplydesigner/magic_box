@@ -133,14 +133,10 @@ inline allocator<T>::allocator(size_t size) :
 }
 
 template<typename T>
-inline allocator<T>::allocator(allocator const & other) :
-	allocator<T>(other.size_),
-	count_(other.count_),
-	bitset_(other.bitset_) {
-	for (size_t i = 0; i < other.count_; ++i) {
-		if (bitset_.test(i)) {
-			this->construct(this->ptr_ + i, other.ptr_[i]);
-		}
+inline allocator<T>::allocator(allocator const & tmp) : 
+	allocator<T>(tmp.size_) {
+	for (size_t i = 0; i < size_; ++i) {
+		construct(ptr_ + i, tmp.ptr_[i]);
 	}
 }
 
