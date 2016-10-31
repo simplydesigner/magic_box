@@ -11,7 +11,6 @@
 
 inline dynamic_bitset::dynamic_bitset(size_t size) noexcept :
 	bits(size) {
-	this->reset();
 }
 
 inline auto dynamic_bitset::all() const noexcept -> bool {
@@ -135,8 +134,8 @@ inline allocator<T>::allocator(size_t size) :
 
 template<typename T>
 inline allocator<T>::allocator(allocator const & other) :
-	ptr_(static_cast<T *>(other.size_ == 0 ? nullptr : operator new(other.size_ * sizeof(T)))),
-	size_(other.size_),
+	allocator<T>(other.size_),
+	count_(other.count_),
 	bitset_(other.bitset_) {
 	for (size_t i = 0; i < other.count_; ++i) {
 		if (bitset_.test(i)) {
@@ -147,7 +146,7 @@ inline allocator<T>::allocator(allocator const & other) :
 
 template<typename T>
 inline auto allocator<T>::construct(T * ptr, T const & value) -> void {
-	if (ptr < ptr_ || ptr >= ptr_ + size_) {
+	if (ptr < ptr_ || ptr >= ptr_ + size_ || bitset_.test(ptr - ptr_)) {
 		throw std::out_of_range("out of range");
 	}
 	new(ptr) T(value);
@@ -162,7 +161,7 @@ auto allocator<T>::count() const -> size_t {
 
 template<typename T>
 auto allocator<T>::destroy(T * ptr) -> void {
-	if (ptr < ptr_ || ptr >= ptr_ + size_) {
+	if (ptr < ptr_ || ptr >= ptr_ + size_ || bitset_.test(ptr - ptr_) == false) {
 		throw std::out_of_range("out of range");
 	}
 	ptr->~T();
@@ -202,9 +201,6 @@ auto allocator<T>::resize() -> void {
 
 template<typename T>
 inline allocator<T>::~allocator() {
-	if (count_ > 0) {
-		destroy(ptr_, ptr_ + count_);
-	}
 	operator delete(ptr_);
 }
 
